@@ -2,6 +2,7 @@
   <div id="app">
     <app-header />
     <index-page />
+    <app-dialog title="Please answer a few questions"> </app-dialog>
   </div>
 </template>
 
@@ -9,12 +10,14 @@
 import Vue from "vue";
 import AppHeader from "@/components/AppHeader.vue";
 import IndexPage from "./pages/IndexPage.vue";
+import AppDialog from "@/components/ui/AppDialog.vue";
 
 export default Vue.extend({
   name: "App",
   components: {
     AppHeader,
     IndexPage,
+    AppDialog,
   },
 });
 </script>
@@ -23,7 +26,7 @@ export default Vue.extend({
 @import "@/assets/styles/global.scss";
 
 #app {
-  font-family: "Inter", sans-serif;
+  font-family: "Roboto Mono", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
