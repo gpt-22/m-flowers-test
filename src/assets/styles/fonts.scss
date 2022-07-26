@@ -1,1 +1,18 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+@font-face {
+  font-family: 'Roboto Mono';
+  src: local('Roboto Mono'), local('RobotoMono-Regular'), url('@/assets/fonts/roboto-mono/Robotomono.woff2') format('woff2'), url('@/assets/fonts/roboto-mono/Robotomono.woff') format('woff'), url('@/assets/fonts/roboto-mono/Robotomono.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Roboto Mono';
+  src: local('Roboto Mono Medium'), local('RobotoMono-Medium'), url('@/assets/fonts/roboto-mono/Robotomonomedium.woff2') format('woff2'), url('@/assets/fonts/roboto-mono/Robotomonomedium.woff') format('woff'), url('@/assets/fonts/roboto-mono/Robotomonomedium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Roboto Mono';
+  src: local('Roboto Mono Bold'), local('RobotoMono-Bold'), url('@/assets/fonts/roboto-mono/Robotomonobold.woff2') format('woff2'), url('@/assets/fonts/roboto-mono/Robotomonobold.woff') format('woff'), url('@/assets/fonts/roboto-mono/Robotomonobold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+}
