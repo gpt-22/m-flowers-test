@@ -2,15 +2,11 @@
   <div v-show="isShown" class="overlay">
     <div class="app-dialog">
       <img
-        :src="require('@/assets/icons/icon-cross.svg')"
+        :src="require('@/assets/icons/close.svg')"
         alt="close"
         class="close-button"
         @click="toggleIsShown"
       />
-
-      <slot name="header">
-        <h3 v-if="title.length" class="dialog-title">{{ title }}</h3>
-      </slot>
 
       <slot />
     </div>
@@ -81,11 +77,5 @@ export default Vue.extend({
   width: 14px;
   height: 14px;
   cursor: pointer;
-}
-
-.dialog-title {
-  font-size: 18px;
-  font-weight: 700;
-  text-align: center;
 }
 </style>
