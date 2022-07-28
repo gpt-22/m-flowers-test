@@ -1,19 +1,14 @@
 <template>
   <div class="progress-bar">
-    <div v-for="dot in dots" :key="dot" class="dot-container">
-      <div class="dot" :class="{ active: dot <= current }" />
-      <div v-if="dot !== dots.length" class="dot-bar" :class="{ passed: dot < current }" />
+    <div v-for="(dot, index) in total" :key="dot" class="dot-container">
+      <div class="dot" :class="{ active: index <= current }" />
+      <div v-if="dot !== total" class="dot-bar" :class="{ passed: index < current }" />
     </div>
   </div>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
-
-interface Data {
-  dots: number[];
-  dotSizePx: number;
-}
 
 export default Vue.extend({
   name: "QuestionnaireProgressBar",
@@ -26,12 +21,6 @@ export default Vue.extend({
       type: Number,
       default: 0,
     },
-  },
-  data: function (): Data {
-    return {
-      dots: [...Array(this.total).keys()],
-      dotSizePx: 21,
-    };
   },
 });
 </script>
