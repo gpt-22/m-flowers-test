@@ -22,12 +22,6 @@ interface Data {
 
 export default Vue.extend({
   name: "AppDialog",
-  props: {
-    title: {
-      type: String,
-      required: false,
-    },
-  },
   data: function (): Data {
     return {
       isShown: true,
@@ -66,7 +60,7 @@ export default Vue.extend({
   border-radius: 5px;
   display: flex;
   flex-direction: column;
-  background-color: #fff;
+  background-color: #f5f5f5;
   box-shadow: 0 4px 4px 0 #00000040;
 }
 
