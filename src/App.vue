@@ -2,15 +2,18 @@
   <div id="app">
     <app-header />
     <index-page />
-    <app-dialog title="Please answer a few questions"> </app-dialog>
+    <app-dialog>
+      <questionnaire-form />
+    </app-dialog>
   </div>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
 import AppHeader from "@/components/AppHeader.vue";
-import IndexPage from "./pages/IndexPage.vue";
-import AppDialog from "@/components/ui/AppDialog.vue";
+import IndexPage from "@/pages/IndexPage.vue";
+import { AppDialog } from "@/components/ui";
+import QuestionnaireForm from "@/components/QuestionnaireForm.vue";
 
 export default Vue.extend({
   name: "App",
@@ -18,6 +21,7 @@ export default Vue.extend({
     AppHeader,
     IndexPage,
     AppDialog,
+    QuestionnaireForm,
   },
 });
 </script>
