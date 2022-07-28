@@ -1,12 +1,12 @@
 <template>
-  <label class="app-radio-button">
+  <label class="app-checkbox">
     <input
-      type="radio"
+      type="checkbox"
       :id="id"
       :value="value"
       :name="name"
       :checked="value"
-      @input="$emit('input', id)"
+      @input="$emit('input', id, value)"
     />
     <span class="text">
       <slot>
@@ -20,7 +20,7 @@
 import Vue from "vue";
 
 export default Vue.extend({
-  name: "AppRadioButton",
+  name: "AppCheckbox",
   props: {
     id: {
       type: [Number, String],
@@ -49,17 +49,17 @@ export default Vue.extend({
 <style scoped lang="scss">
 $fieldIconsPath: "@/assets/icons/fields/";
 
-.app-radio-button {
+.app-checkbox {
   display: flex;
   position: relative;
   cursor: pointer;
 }
 
-[type="radio"] {
+[type="checkbox"] {
   appearance: none;
 
   &:checked ~ .text::before {
-    background: url($fieldIconsPath + "radio-button-checked.svg") center center;
+    background: url($fieldIconsPath + "checkbox-checked.svg") center center;
   }
 }
 
@@ -75,7 +75,7 @@ $fieldIconsPath: "@/assets/icons/fields/";
     left: 0;
     width: 18px;
     height: 18px;
-    background: url($fieldIconsPath + "radio-button-default.svg") center center;
+    background: url($fieldIconsPath + "checkbox-default.svg") center center;
   }
 }
 </style>
