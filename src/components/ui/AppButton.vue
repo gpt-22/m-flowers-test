@@ -1,9 +1,5 @@
 <template>
-  <button
-    class="app-button"
-    :disabled="disabled"
-    @click.prevent="$emit('click')"
-  >
+  <button class="app-button" :disabled="disabled" @click.prevent="$emit('click')">
     <slot>
       {{ text }}
     </slot>
@@ -57,8 +53,8 @@ export default Vue.extend({
   }
 
   &:disabled {
-    background-color: #e6e6e6;
-    color: darken(#e6e6e6, 10);
+    background-color: $color-background-disabled;
+    color: $color-disabled;
     cursor: not-allowed;
   }
 }

@@ -2,26 +2,19 @@
   <div id="app">
     <app-header />
     <index-page />
-    <app-dialog>
-      <questionnaire-form />
-    </app-dialog>
   </div>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
 import AppHeader from "@/components/AppHeader.vue";
-import IndexPage from "@/pages/IndexPage.vue";
-import { AppDialog } from "@/components/ui";
-import QuestionnaireForm from "@/components/QuestionnaireForm.vue";
+import IndexPage from "@/modules/questionnaire/pages/IndexPage.vue";
 
 export default Vue.extend({
   name: "App",
   components: {
     AppHeader,
     IndexPage,
-    AppDialog,
-    QuestionnaireForm,
   },
 });
 </script>

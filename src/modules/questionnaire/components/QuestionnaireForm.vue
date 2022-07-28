@@ -4,7 +4,7 @@
 
     <questionnaire-progress-bar :total="totalSteps" :current="step" class="progress-bar" />
 
-    <div class="question">
+    <div v-if="currentQuestion" class="question">
       <div class="question-text">{{ currentQuestion.text }} {{ questionCounter }}</div>
 
       <div class="answer-container">
@@ -17,6 +17,20 @@
             :label="answer.label"
             @input="onInput(currentQuestion.hasMultipleAnswers, answer)"
           />
+
+          <div v-if="answer?.answers?.length" class="answer-container">
+            <div v-for="nestedAnswer in answer.answers" :key="nestedAnswer.id" class="answer">
+              <component
+                :is="getComponentByFieldType(nestedAnswer.fieldType)"
+                :id="nestedAnswer.id"
+                :value="nestedAnswer.value"
+                :name="answer"
+                :label="nestedAnswer.label"
+                :disabled="true"
+                @input="onInput(currentQuestion.hasMultipleAnswers, nestedAnswer)"
+              />
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -30,46 +44,27 @@
 <script lang="ts">
 import Vue from "vue";
 import { AppButton, AppCheckbox, AppRadioButton, AppTextarea } from "@/components/ui";
-import QuestionnaireProgressBar from "@/components/QuestionnaireProgressBar.vue";
-import data from "./questions.json";
+import QuestionnaireProgressBar from "./QuestionnaireProgressBar.vue";
+
+import { axiosInstance } from "@/api/axiosInstance";
+import { AxiosResponse } from "axios";
+import { Answer, FieldType, Question } from "../types/Question";
 
 /* TODO:
  * + save answers
  * + progress bar
+ * + get question from server
+ * save answers on server
  * render nested fields
  * disable textarea in 3, 4 question
  * */
 
-type FieldType = "radio" | "checkbox" | "textarea";
-
-type Answer = {
-  id: number;
-  label: string;
-  value: string | boolean;
-  fieldType: FieldType;
-  nextQuestionId: number | null;
-  answers?: Answer[];
-};
-
-type Question = {
-  id: number;
-  step: number;
-  text: string;
-  answers: Answer[];
-  hasMultipleAnswers?: boolean;
-};
-
 interface Data {
-  step: number;
+  questions: Question[];
   currentQuestion: Question;
+  step: number;
   currentAnswers: Answer[];
   form: Map<Question, Answer[]>;
-}
-
-const questions: Question[] = data as Question[];
-
-function getCurrentAnswersByQuestion(question: Question): Answer[] {
-  return question.answers.filter((answer: Answer) => Boolean(answer.value));
 }
 
 export default Vue.extend({
@@ -77,9 +72,10 @@ export default Vue.extend({
   components: { AppButton, AppRadioButton, QuestionnaireProgressBar },
   data: function (): Data {
     return {
-      step: questions[0].step,
-      currentQuestion: questions[0],
-      currentAnswers: getCurrentAnswersByQuestion(questions[0]),
+      questions: [],
+      step: null,
+      currentQuestion: null,
+      currentAnswers: [],
       form: new Map(),
     };
   },
@@ -91,11 +87,24 @@ export default Vue.extend({
       return this.hasNextQuestion ? "Next" : "Save";
     },
     totalSteps(): number {
-      return new Set(questions.map((question) => question.step)).size;
+      return new Set(this.questions.map((question) => question.step)).size;
     },
     questionCounter(): string {
       return `(${this.step + 1}/${this.totalSteps})`;
     },
+  },
+  created(): void {
+    axiosInstance
+      .get("questions")
+      .then((response: AxiosResponse) => {
+        this.questions = response.data as Question[];
+        this.currentQuestion = this.questions[4];
+        this.step = this.currentQuestion.step;
+        this.currentAnswers = this.getCurrentAnswersByQuestion();
+      })
+      .catch(() => {
+        console.error("Ошибка при запросе списка вопросов");
+      });
   },
   methods: {
     getComponentByFieldType(type: FieldType) {
@@ -110,20 +119,25 @@ export default Vue.extend({
           throw new Error(`Нет компонента для данного типа поля (тип ${type})`);
       }
     },
-    onNextClick() {
+    getCurrentAnswersByQuestion(): Answer[] {
+      return this.currentQuestion.answers.filter((answer: Answer) => Boolean(answer.value));
+    },
+    onNextClick(): void {
       if (this.hasNextQuestion) this.switchQuestion();
       else this.saveFormData();
     },
-    switchQuestion() {
+    switchQuestion(): void {
       this.form.set(this.currentQuestion, this.currentAnswers);
       this.step++;
-      this.currentQuestion = questions.find((question) => question.id === this.currentAnswers[0].nextQuestionId);
-      this.currentAnswers = getCurrentAnswersByQuestion(this.currentQuestion);
+      this.currentQuestion = this.questions.find(
+        (question: Question) => question.id === this.currentAnswers[0].nextQuestionId
+      );
+      this.currentAnswers = this.getCurrentAnswersByQuestion();
     },
     saveFormData() {
       console.log("save");
     },
-    onInput(hasMultipleAnswers: boolean, answer: Answer) {
+    onInput(hasMultipleAnswers: boolean, answer: Answer): void {
       if (hasMultipleAnswers) {
         const answerByValueAdded = Boolean(this.currentAnswers.find((currentAnswer) => currentAnswer.id === answer.id));
         if (!answerByValueAdded) {
@@ -157,7 +171,8 @@ export default Vue.extend({
   margin-bottom: 30px;
 }
 
-.answer-container {
+.answer-container,
+.answer {
   display: flex;
   flex-direction: column;
   gap: 12px;

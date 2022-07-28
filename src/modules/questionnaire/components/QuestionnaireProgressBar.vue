@@ -45,11 +45,11 @@ export default Vue.extend({
   width: 21px;
   height: 21px;
   background: #c4c4c4;
-  border: 2px solid #b3b3b3;
+  border: 2px solid $color-border;
   border-radius: 50%;
 
   &.active {
-    background: #8cd6ff;
+    background: $color-primary-background;
     border: 2px solid $color-primary;
   }
 }
@@ -57,7 +57,7 @@ export default Vue.extend({
 .dot-bar {
   flex-grow: 1;
   height: 3px;
-  background-color: #b3b3b3;
+  background-color: $color-border;
 
   &.passed {
     background-color: $color-primary;

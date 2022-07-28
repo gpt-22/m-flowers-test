@@ -1,12 +1,15 @@
 <template>
-  <textarea
-    :id="id"
-    :value="value"
-    :cols="cols"
-    :rows="rows"
-    class="app-textarea"
-    @input="$emit('input', $event.target.value)"
-  />
+  <label class="app-textarea">
+    <textarea
+      :id="id"
+      :value="value"
+      :cols="cols"
+      :rows="rows"
+      :disabled="disabled"
+      class="app-textarea-input"
+      @input="$emit('input', $event.target.value)"
+    />
+  </label>
 </template>
 
 <script lang="ts">
@@ -42,14 +45,15 @@ export default Vue.extend({
 <style scoped lang="scss">
 @import "@/assets/styles/variables";
 
-.app-textarea {
+.app-textarea-input {
   min-width: 260px;
   padding: 9px;
   border-radius: 5px;
-  background-color: #f5f5f5;
+  background-color: $color-background-light;
   font: 400 12px "Roboto Mono";
   line-height: 18px;
-  border: 2px solid #b3b3b3;
+  border: 2px solid $color-border;
+  resize: none;
   transition: background-color 0.2s;
   cursor: pointer;
 
@@ -67,8 +71,8 @@ export default Vue.extend({
   }
 
   &:disabled {
-    //background-color: #e6e6e6;
-    //color: darken(#e6e6e6, 10);
+    background-color: $color-background-disabled;
+    color: $color-disabled;
   }
 }
 </style>
