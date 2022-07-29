@@ -73,6 +73,7 @@ export default Vue.extend({
   &:disabled {
     background-color: $color-background-disabled;
     color: $color-disabled;
+    cursor: not-allowed;
   }
 }
 </style>

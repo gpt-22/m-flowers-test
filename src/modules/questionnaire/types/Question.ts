@@ -6,6 +6,7 @@ export type Answer = {
   value: string | boolean;
   fieldType: FieldType;
   nextQuestionId: number | null;
+  disabled: boolean;
   answers?: Answer[];
 };
 

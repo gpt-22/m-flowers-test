@@ -2,11 +2,12 @@
   <label class="app-checkbox">
     <input
       type="checkbox"
-      :id="id"
+      v-model="model"
       :value="value"
+      :id="id"
       :name="name"
       :checked="value"
-      @input="$emit('input', id, value)"
+      @input="$emit('input', value)"
     />
     <span class="text">
       <slot>
@@ -43,6 +44,16 @@ export default Vue.extend({
       default: false,
     },
   },
+  computed: {
+    model: {
+      get: function () {
+        return this.value;
+      },
+      set: function (val: boolean) {
+        this.$emit("input", val);
+      },
+    },
+  },
 });
 </script>
 
@@ -67,6 +78,7 @@ $fieldIconsPath: "@/assets/icons/fields/";
   margin-left: 34px;
   font: 400 12px "Roboto Mono";
   line-height: 18px;
+  user-select: none;
 
   &::before {
     content: "";

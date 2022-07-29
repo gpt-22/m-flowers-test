@@ -12,25 +12,12 @@
           <component
             :is="getComponentByFieldType(answer.fieldType)"
             :id="answer.id"
-            :value="answer.value"
+            v-model="answer.value"
             :name="currentQuestion.text"
             :label="answer.label"
+            :disabled="answer.disabled"
             @input="onInput(currentQuestion.hasMultipleAnswers, answer)"
           />
-
-          <div v-if="answer?.answers?.length" class="answer-container">
-            <div v-for="nestedAnswer in answer.answers" :key="nestedAnswer.id" class="answer">
-              <component
-                :is="getComponentByFieldType(nestedAnswer.fieldType)"
-                :id="nestedAnswer.id"
-                :value="nestedAnswer.value"
-                :name="answer"
-                :label="nestedAnswer.label"
-                :disabled="true"
-                @input="onInput(currentQuestion.hasMultipleAnswers, nestedAnswer)"
-              />
-            </div>
-          </div>
         </div>
       </div>
     </div>
@@ -55,13 +42,21 @@ import { Answer, FieldType, Question } from "../types/Question";
  * + progress bar
  * + get question from server
  * save answers on server
- * render nested fields
- * disable textarea in 3, 4 question
+ * + disable textarea in 3, 4, 5, 6 question
+ * + reactive disable
+ * + bug: primaryButtonText
  * */
+
+const fieldIdDisabledMap = new Map([
+  [9, (answers: Answer[]) => answers.find((answer) => answer.id === 10)?.value === true],
+  [11, (answers: Answer[]) => answers.find((answer) => answer.id === 12)?.value === true],
+  [17, (answers: Answer[]) => answers.find((answer) => answer.id === 16)?.value === false],
+  [18, (answers: Answer[]) => answers.find((answer) => answer.id === 19)?.value === true],
+]);
 
 interface Data {
   questions: Question[];
-  currentQuestion: Question;
+  currentQuestion: Question | null;
   step: number;
   currentAnswers: Answer[];
   form: Map<Question, Answer[]>;
@@ -69,11 +64,11 @@ interface Data {
 
 export default Vue.extend({
   name: "QuestionnaireForm",
-  components: { AppButton, AppRadioButton, QuestionnaireProgressBar },
+  components: { AppButton, QuestionnaireProgressBar },
   data: function (): Data {
     return {
       questions: [],
-      step: null,
+      step: -1,
       currentQuestion: null,
       currentAnswers: [],
       form: new Map(),
@@ -81,7 +76,9 @@ export default Vue.extend({
   },
   computed: {
     hasNextQuestion(): boolean {
-      return !this.currentAnswers.every((answer) => answer.nextQuestionId === null);
+      let lastStep = -1;
+      this.questions.forEach((question) => (lastStep = question.step > lastStep ? question.step : lastStep));
+      return this.step < lastStep;
     },
     primaryButtonText(): string {
       return this.hasNextQuestion ? "Next" : "Save";
@@ -93,12 +90,21 @@ export default Vue.extend({
       return `(${this.step + 1}/${this.totalSteps})`;
     },
   },
+  watch: {
+    questions: {
+      handler() {
+        this.setDisabled();
+      },
+      deep: true,
+    },
+  },
   created(): void {
     axiosInstance
       .get("questions")
       .then((response: AxiosResponse) => {
         this.questions = response.data as Question[];
-        this.currentQuestion = this.questions[4];
+        this.setDisabled();
+        this.currentQuestion = this.questions[0];
         this.step = this.currentQuestion.step;
         this.currentAnswers = this.getCurrentAnswersByQuestion();
       })
@@ -119,13 +125,31 @@ export default Vue.extend({
           throw new Error(`Нет компонента для данного типа поля (тип ${type})`);
       }
     },
+
     getCurrentAnswersByQuestion(): Answer[] {
       return this.currentQuestion.answers.filter((answer: Answer) => Boolean(answer.value));
     },
+
+    getIsAnswerFieldDisabled(answerId: number, answers: Answer[]): boolean {
+      const getDisabledFunction = fieldIdDisabledMap.get(answerId);
+      if (getDisabledFunction) return getDisabledFunction(answers);
+
+      return false;
+    },
+
+    setDisabled() {
+      this.questions.forEach((q) => {
+        q.answers.forEach((a) => {
+          a.disabled = this.getIsAnswerFieldDisabled(a.id, q.answers);
+        });
+      });
+    },
+
     onNextClick(): void {
       if (this.hasNextQuestion) this.switchQuestion();
       else this.saveFormData();
     },
+
     switchQuestion(): void {
       this.form.set(this.currentQuestion, this.currentAnswers);
       this.step++;
@@ -134,9 +158,11 @@ export default Vue.extend({
       );
       this.currentAnswers = this.getCurrentAnswersByQuestion();
     },
+
     saveFormData() {
       console.log("save");
     },
+
     onInput(hasMultipleAnswers: boolean, answer: Answer): void {
       if (hasMultipleAnswers) {
         const answerByValueAdded = Boolean(this.currentAnswers.find((currentAnswer) => currentAnswer.id === answer.id));
@@ -171,8 +197,7 @@ export default Vue.extend({
   margin-bottom: 30px;
 }
 
-.answer-container,
-.answer {
+.answer-container {
   display: flex;
   flex-direction: column;
   gap: 12px;
