@@ -5,7 +5,12 @@
 yarn install
 ```
 
-### Compiles and hot-reloads for development
+### Back
+```
+node backend/app.js
+```
+
+### Front
 ```
 yarn serve
 ```
